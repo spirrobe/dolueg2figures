@@ -71,7 +71,7 @@ figoptions refer to the whole figure setup, for example which of the codes shoul
 ## xy ( scatter-like plot, replace time on x-axis with another variable) 
 
 Create an overview of temperatures in the area/surroundings to present prominently below a measurement values table
-![Scatter plot of temperature between rural and urban station with urban station on x axis](https://mcr.unibas.ch/dolueg2/projects/basel/plots/3year/basel_0_a_atemp_scatter.svg "Temperature Scatter Rural vs Urban")
+![Scatter plot of temperature between rural and urban station with urban station on x axis](https://raw.githubusercontent.com/spirrobe/dolueg2figures/examples/basel_0_a_atemp_scatter.svg "Temperature Scatter Rural vs Urban")
 
 ```python
 plot(['BKLIDTA9', 'BLERDTA1'],
