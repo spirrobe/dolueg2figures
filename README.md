@@ -48,22 +48,110 @@ You can find examples in the related, published BAMS article and at the above UR
 
 # Examples
 ## Linear time series examples
-### Simple case
+#### Simple case
 ![Relative humidity at several locations](https://mcr.unibas.ch/dolueg2/projects/basel/plots/1week/basel_0_a_relhum.svg "Relative humidity at several locations")
+```python
+humcol = ['#0000ff', '#00A6ff', '#00ffff',
+          '#00B2B2', '#006666', '#003333', '#99ccff']
+          
+plot(['BLERRHA1', 'BKLIRHA9', 'BKLIRHA7', 'BLEORHA1', 'BLERRHA8', 'BKLSRHA2', 'BKLBRHA2'],
+     t0=datetime.datetime.now()-datetime.timedelta(days=7),
+     t1=datetime.datetime.now(),
+     dt='30Min',
+     outfile='basel_0_a_relhum.svg',
+     colors=humcol,
+     minvalue=-999,
+     figopt={'yrange': [0, 100]},
+             )   
+```
+Select which codes (all relative humidity in this case) and the t0, t1 (here with the datetime module from the stdlib) and the dt as resolution of 30 minutes. Define the outputfile (change ending to .png if you want PNG files instead as it is passed directly to matplotlib).
+Create some blue shades/colors for use and explicitly set the yrange to avoid the autoscaling to only the existing range (sensible here for relative humidity).
 
-
-
-### Bars instead of markers/lines
+#### Bars instead of markers/lines
 ![Rain as bars instead of line](https://mcr.unibas.ch/dolueg2/projects/basel/plots/1week/basel_0_b_precipitation.svg "Rain as bars instead of line")
-### Cumulative Lines
+```python
+
+plot(['BKLIPCT2', 'BLEOPCT1', 'BBINPCT1', 'BKLSPCT2', 'BKLBPCT2', ],
+     t0=datetime.datetime.now()-datetime.timedelta(days=7),
+     t1='*',
+     dt='1H',
+     outfile='basel_0_b_precipitation.svg', 
+     figopt={'yrange': [0, -9999],   
+             'barcodes': ['BKLIPCT2', 'BLEOPCT1', 'BBINPCT1', 'BKLSPCT2', 'BKLBPCT2'],
+            },
+     colors=humcol,
+     ) 
+```            
+
+Select which codes (in this case precipitation, PCT) to choose and again select a timerange where '*' is interpreted as now with our getdata function. Set dt to be 1H instead and define an outfile where to save. 
+Set the ylim/yrange lower limit to 0, and the upper to autofind with the special code -9999. This makes the function find a rounded maximum based on the range found in the data.
+Define which ones of the codes should be plotted as bars instead of lines. These can be all or just some codes (here all are set to be plotted as bar). Use the same colors as defined above
+
+#### Cumulative Lines
 ![Cumulative rain at different locations](https://mcr.unibas.ch/dolueg2/projects/basel/plots/1week/basel_0_b_precipitation_cumulative.svg "Cumulative rain at different locations")
 
+```python
 
-### Specific ticks/axes 
+plot(['BKLIPCT2', 'BLEOPCT1', 'BBINPCT1', 'BBINPCT4', 'BKLSPCT2', 'BKLBPCT2'],     
+     t0='*-14',
+     t1=datetime.datetime.now(),
+     outfile='basel_0_b_precipitation_cumulative.svg', 
+     figopt={'cumulativecodes': ['BKLIPCT2', 'BLEOPCT1', 'BBINPCT1', 'BBINPCT4', 'BKLSPCT2', 'BKLBPCT2'], 
+             'yrange': [0, -9999],
+            },
+     colors=humcol,
+     )  
+     
+``` 
+Select the same precipiation codes as in the example above. Use mixed t0 and t1 format again, for 14 days this time.
+Choose cumulativecodes in this example for all codes and set the range to 0 and autofind with [0, -9999].
+Take the same colors as before.
+
+#### Specific ticks/axes 
 Ticks ofthe right axis changed from numbers to winddirection (also possible for first axis)
 ![Wind speed, gusts and direction](https://mcr.unibas.ch/dolueg2/projects/basel/plots/1week/basel_4_c_wind.svg "Wind speed, gusts and direction")
+```python
 
-### More complex case
+for windno, windcodes in enumerate([['BKLIWVA6', 'BKLIWVX6', 'BKLIWDA1'],
+                                    ['BKLSWVA2', 'BKLSWVX2', 'BKLSWDA2'],
+                                    ['BKLBWVA2', 'BKLBWVX2', 'BKLBWDA2'],
+                                    ['BAWVA1', 'BAWVX1', 'BAWDA1'],
+                                    ['BLEOWVA1', 'BLEOWVX1', 'BLEOWDA1'],
+                                    [],  # empty for binningen
+                                    ['BLERWVA7', 'BLERWVX7', 'BLERWDA2'],
+                                    ]):
+    if windcodes:
+        pass
+    else:
+        continue
+
+    windcodes = ['BAWVA1', 'BAWVX1', 'BAWDA1'] 
+    plot(windcodes,
+         t0='*', t1='*-7', dt='30Min',
+         outfile='basel_'+str(windno+1)+'_c_wind.svg',
+         colors=['#9900cc', '#9900cc', '#ff0000'],
+         figopt={'yrange': [0, -9999],
+                 'yticks': 5,
+                 'secondaryaxis': windcodes[2],
+                 'secondaryaxisyrange': [0, 360],
+                 'secondaryaxisticks': 5,
+                 'secondaryaxislabels': ['N','E','S','W','N'],
+                 },
+         lineopt={windcodes[1]: {'ls':':'},
+                  windcodes[2]: {'marker': 'o', 'ls': 'None'},
+                 },
+         )
+
+```
+The picture example shows one of the created plots (Aeschenplatz).
+Create the same plot for several stations as denoted by the list of lists with codes. Take note that overview plots have a 0 in their filename for our dolueg2 setup and we thus start with station 1, i.e. we add 1 to the windno to account for the overview being 0.
+This allows for windcodes to be reused directly (see figopt/lineopt) in the call. We on purpose set t0 and t1 the wrong way around, i.e. t0 is now, t1 is in the past as our getdata function automatically adjusts for this error.
+outfile contains the windno as the loopcounter where we add +1 to the windno.
+For figoptions set the left axis to autofind with [0, -9999], and to have 5 ticks instead of the default to match up with the right axis. Choose which codes go on the secondary axis with the secondaryaxis entry, set the yrange to 0 to 360° for our wind direction and also set the ticks to be 5 (instead of matplotlib default). Choose aliases/yticklabels for the second axis to make it more user-friendly.
+
+Set the linestyle windcodes[1] (which is the wind gusts in this case) to dotted with an ls of ':' and choose no linestyle for the windcodes[2] (winddirection) and only markers. The latter makes wind direction plots more appealing in our opinion. Change as needed/wanted.
+
+#### More complex cases
 Create an overview of temperatures in the area/surroundings to present prominently below a measurement values table
 ![Temperature Overview](https://mcr.unibas.ch/dolueg2/projects/basel/plots/0day/basel_temp_overview.svg "Temperature Overview")
 
@@ -179,17 +267,53 @@ Despite its issues, use the jet colormap with cmap='jet'
 Set the plottype to 'mesh'
       
 ## windmap (draw windrose at locations of stations on a static webmap of google or openstreetmap)
-![Backscatter at Basel Klingelbergstrasse](https://mcr.unibas.ch/dolueg2/projects/basel/plots/1week/basel_0i_mapwind.svg "Ceilometer measurements of the boundary layer/lower atmosphere in Basel")
+![Windroses in the Basel area of last week](https://mcr.unibas.ch/dolueg2/projects/basel/plots/1week/basel_0i_mapwind.svg "Windroses in the Basel area of last week")
+```python
+plot(['BKLIWDA1', 'BKLIWVA6', 'BLERWDA2', 'BLERWVA7'], 
+     t0='*-7',
+     outfile='basel_0i_mapwind.svg',
+     minvalue=-999,        
+     figopt={'yrange': [0, 360]},   
+     plottype='wind',
+     mapfullscreen=True,
+     #cmap='jet',
+)    
+```
+Choose which windcodes should be used in order of wind direction and wind speed (WDA, then WVA for us). The two stations here are Basel Klingelberg and Basel Lange Erle, that is urban and rural.
+Set t0 to '*-7' for data of the last week, t1 defaults to now (when the function is run). Timespan of data is indicated in the map.
+Do not use a dt as we want statistics of the whole range instead of aggregated.
+Figopt can be set but will not be used anywhere in this kind of plottype='wind'
+Remove the coordinates around the map, i.e. mape the map fullscreen=True, which gives a better impression, but may remove possibilites for orientation.
+If needed, another than the default colormap for windroses can be used by passing the cmap keyword that is outcommented. Any matplotlib named colormap or a self-generated cmap can be used.
 
-![Backscatter at Basel Klingelbergstrasse](https://mcr.unibas.ch/dolueg2/projects/namibia/plots/3year/namibia_0i_12i_mapwind.svg "Ceilometer measurements of the boundary layer/lower atmosphere in Basel")
 
-![Backscatter at Basel Klingelbergstrasse](https://mcr.unibas.ch/dolueg2/projects/urbanfluxes/plots/1week/urbanfluxes_0i_9i_mapwind.svg "Ceilometer measurements of the boundary layer/lower atmosphere in Basel")
+![Urbanfluxes single station windrose data](https://mcr.unibas.ch/dolueg2/projects/urbanfluxes/plots/1week/urbanfluxes_0i_9i_mapwind.svg "Urbanfluxes single station windrose data")
+```python
+plot(['UFBCWWD', 'UFBCWWV'],
+     t0=t0, t1=t1,         
+     outfile='urbanfluxes_0i_9i_mapwind.svg', 
+     plottype='wind',   
+     )                
+```
 
-
-
+The simplest way to create the windmap with just winddirection code, the timerange and change of the plottype.
 
 ## stationmap (draw markers for stations of a network on a static webmap of google or openstreetmap)
-![Backscatter at Basel Klingelbergstrasse](https://mcr.unibas.ch/dolueg2/projects/urbanfluxes/plots/0day/urbanfluxes_0i_stationmap.svg "Ceilometer measurements of the boundary layer/lower atmosphere in Basel")
+![Stationmap of URBANFLUXES](https://mcr.unibas.ch/dolueg2/projects/urbanfluxes/plots/0day/urbanfluxes_0i_stationmap.svg "Stationmap of URBANFLUXES")
+```python
+
+plot(['UFB1WWD', 'UFB2BVA', 'UFB3WWD', 'UFB4BVA', 'UFB5WWD',
+      'UFB6BVA', 'UFB7WWD', 'UFB8BVA', 'UFBABVA'],
+      t0='*-1',
+      t1='*',
+      outfile=projectprefix+'_0i_stationmap.svg',
+      plottype='stationmap',
+)
+```
+
+Instead of a windmap, a similar type is the stationmap, which creates a map with markers, where nearby markers are combined. Each marker is numbered according to the passed in order of the list. As there are no real data needed, t0 and t1 can be set to a minimal timespan and any code for a station can be used as only the metadata of latitude and longitude are used.
+
+                                                                                    
 
 
                                                   
