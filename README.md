@@ -54,7 +54,7 @@ For proper functionality a few adjustments have to be made, dependent on your us
 # Examples
 ## Linear time series examples
 #### Simple case
-![Relative humidity at several locations](https://mcr.unibas.ch/dolueg2/projects/basel/plots/1week/basel_0_a_relhum.svg "Relative humidity at several locations")
+![Relative humidity at several locations](https://raw.githubusercontent.com/spirrobe/dolueg2figures/master/examples/basel_0_a_relhum.svg "Relative humidity at several locations")
 ```python
 humcol = ['#0000ff', '#00A6ff', '#00ffff',
           '#00B2B2', '#006666', '#003333', '#99ccff']
@@ -73,7 +73,7 @@ Select which codes (all relative humidity in this case) and the t0, t1 (here wit
 Create some blue shades/colors for use and explicitly set the yrange to avoid the autoscaling to only the existing range (sensible here for relative humidity).
 
 #### Bars instead of markers/lines
-![Rain as bars instead of line](https://mcr.unibas.ch/dolueg2/projects/basel/plots/1week/basel_0_b_precipitation.svg "Rain as bars instead of line")
+![Rain as bars instead of line](https://raw.githubusercontent.com/spirrobe/dolueg2figures/master/examples/basel_0_b_precipitation.svg "Rain as bars instead of line")
 ```python
 
 plot(['BKLIPCT2', 'BLEOPCT1', 'BBINPCT1', 'BKLSPCT2', 'BKLBPCT2', ],
@@ -93,7 +93,7 @@ Set the ylim/yrange lower limit to 0, and the upper to autofind with the special
 Define which ones of the codes should be plotted as bars instead of lines. These can be all or just some codes (here all are set to be plotted as bar). Use the same colors as defined above
 
 #### Cumulative Lines
-![Cumulative rain at different locations](https://mcr.unibas.ch/dolueg2/projects/basel/plots/1week/basel_0_b_precipitation_cumulative.svg "Cumulative rain at different locations")
+![Cumulative rain at different locations](https://raw.githubusercontent.com/spirrobe/dolueg2figures/master/examples/basel_0_b_precipitation_cumulative.svg "Cumulative rain at different locations")
 
 ```python
 
@@ -114,7 +114,7 @@ Take the same colors as before.
 
 #### Specific ticks/axes 
 Ticks ofthe right axis changed from numbers to winddirection (also possible for first axis)
-![Wind speed, gusts and direction](https://mcr.unibas.ch/dolueg2/projects/basel/plots/1week/basel_4_c_wind.svg "Wind speed, gusts and direction")
+![Wind speed, gusts and direction](https://raw.githubusercontent.com/spirrobe/dolueg2figures/master/examples/basel_4_c_wind.svg "Wind speed, gusts and direction")
 ```python
 
 for windno, windcodes in enumerate([['BKLIWVA6', 'BKLIWVX6', 'BKLIWDA1'],
@@ -158,7 +158,7 @@ Set the linestyle windcodes[1] (which is the wind gusts in this case) to dotted 
 
 #### More complex cases
 Create an overview of temperatures in the area/surroundings to present prominently below a measurement values table
-![Temperature Overview](https://mcr.unibas.ch/dolueg2/projects/basel/plots/0day/basel_temp_overview.svg "Temperature Overview")
+![Temperature Overview](https://raw.githubusercontent.com/spirrobe/dolueg2figures/master/examples/basel_temp_overview.svg "Temperature Overview")
 
 ```python
 plot(['BKLIDTA1', 'BLERDTA7', 'B2091WT0'],
@@ -197,7 +197,7 @@ Keep the temperature range that is shown fixed from -4 to 4 and choose a specifi
 ## Profile (several heights versus time) time series example
 
 Create an overview of temperatures in the area/surroundings to present prominently below a measurement values table
-![Temperature difference between two stations over the course of a day versus day of year](https://mcr.unibas.ch/dolueg2/projects/basel/plots/0day/basel_1_a_atemp_profile.svg "Temperature Difference Urban-Rural")
+![Temperature difference between two stations over the course of a day versus day of year](https://raw.githubusercontent.com/spirrobe/dolueg2figures/master/examples/basel_1_a_atemp_profile.svg "Temperature Difference Urban-Rural")
 
 ```python
 plot(['BKLIDTA9-BLERDTA1'],
@@ -215,7 +215,7 @@ Keep the temperature range that is shown fixed from -4 to 4 and choose a specifi
 ## Iso (measurements run over the day versus day of year) time series examples
 
 Create an overview of temperatures in the area/surroundings to present prominently below a measurement values table
-![Temperature profile at Basel Klingelbergstrasse](https://mcr.unibas.ch/dolueg2/projects/basel/plots/3year/basel_0_a_atemp_diff_iso.svg "Temperature profile at Basel Klingelbergstrasse")
+![Temperature profile at Basel Klingelbergstrasse](https://raw.githubusercontent.com/spirrobe/dolueg2figures/master/examples/basel_0_a_atemp_diff_iso.svg "Temperature profile at Basel Klingelbergstrasse")
 
 ```python
 plot(['BKLIDTA'+i for i in ['7', '8', '9']],
@@ -244,7 +244,7 @@ lineopt denote a larger linewidth for the profileconnection, and which marker to
 ## Mesh (measurements at several heights versus time)
 
 Create an overview of temperatures in the area/surroundings to present prominently below a measurement values table
-![Backscatter at Basel Klingelbergstrasse](https://mcr.unibas.ch/dolueg2/projects/basel/plots/0day/basel_1_g_backscatter_1medium.svg "Ceilometer measurements of the boundary layer/lower atmosphere in Basel")
+![Backscatter at Basel Klingelbergstrasse](https://raw.githubusercontent.com/spirrobe/dolueg2figures/master/examples/basel_1_g_backscatter_1medium.svg "Ceilometer measurements of the boundary layer/lower atmosphere in Basel")
 
 ```python
 bsheight = 1000 # how far up as the code corresponds to the measurement height
@@ -272,7 +272,7 @@ Despite its issues, use the jet colormap with cmap='jet'
 Set the plottype to 'mesh'
       
 ## windmap (draw windrose at locations of stations on a static webmap of google or openstreetmap)
-![Windroses in the Basel area of last week](https://mcr.unibas.ch/dolueg2/projects/basel/plots/1week/basel_0i_mapwind.svg "Windroses in the Basel area of last week")
+![Windroses in the Basel area of last week](https://raw.githubusercontent.com/spirrobe/dolueg2figures/master/examples/basel_0i_mapwind.svg "Windroses in the Basel area of last week")
 ```python
 plot(['BKLIWDA1', 'BKLIWVA6', 'BLERWDA2', 'BLERWVA7'], 
      t0='*-7',
@@ -292,7 +292,7 @@ Remove the coordinates around the map, i.e. mape the map fullscreen=True, which 
 If needed, another than the default colormap for windroses can be used by passing the cmap keyword that is outcommented. Any matplotlib named colormap or a self-generated cmap can be used.
 
 
-![Urbanfluxes single station windrose data](https://mcr.unibas.ch/dolueg2/projects/urbanfluxes/plots/1week/urbanfluxes_0i_9i_mapwind.svg "Urbanfluxes single station windrose data")
+![Urbanfluxes single station windrose data](https://raw.githubusercontent.com/spirrobe/dolueg2figures/master/examples/urbanfluxes_0i_9i_mapwind.svg "Urbanfluxes single station windrose data")
 ```python
 plot(['UFBCWWD', 'UFBCWWV'],
      t0=t0, t1=t1,         
@@ -304,7 +304,7 @@ plot(['UFBCWWD', 'UFBCWWV'],
 The simplest way to create the windmap with just winddirection code, the timerange and change of the plottype.
 
 ## stationmap (draw markers for stations of a network on a static webmap of google or openstreetmap)
-![Stationmap of URBANFLUXES](https://mcr.unibas.ch/dolueg2/projects/urbanfluxes/plots/0day/urbanfluxes_0i_stationmap.svg "Stationmap of URBANFLUXES")
+![Stationmap of URBANFLUXES](https://raw.githubusercontent.com/spirrobe/dolueg2figures/master/examples/urbanfluxes_0i_stationmap.svg "Stationmap of URBANFLUXES")
 ```python
 
 plot(['UFB1WWD', 'UFB2BVA', 'UFB3WWD', 'UFB4BVA', 'UFB5WWD',
