@@ -1,5 +1,5 @@
 # Figures
-Make figures like on mcr.unibas.ch/dolueg2 in terms of layout and filenaming so they may automatically be found by the PHP script in the homepage folder
+Make figures like on mcr.unibas.ch/dolueg2 in terms of layout and filenaming so they may automatically be found by the PHP script employed by the webserver
 
 # Types of figures
 Available types are:
@@ -13,11 +13,16 @@ Available types are:
 
 You can find examples in the related, published BAMS article and at the above URL
  
- # Installation
- For proper functionality a few adjustments have to be made, dependent on your use-case:
- - You need to have a getdata function that returns data and metadata for the timeseries. Since our database still has columnheaders in german, some adjustments in the plot.py file might be in order for what you want to have displayed. 
- - Automatic creation in our case is done via creating a crontab that runs every hour, and the dolueg2.py defines which plots of a project and which timespans (e.g. hourly, weekly, monthly, yearly) are created at that time, depending on the time of day the dolueg2.py is run. Adjust as needed.
- - If you wish for stationmap/windmaps with a google maps background you will need an API key. Take care that this API key is kept private. Alternatively and by default the statis maps use openstreetmap background so it works out of the box.
+# Installation
+For proper functionality a few adjustments have to be made, dependent on your use-case:
+- You need to have a getdata function that returns data and metadata for the timeseries. Since our database still has columnheaders in german, some adjustments in the plot.py file might be in order for what you want to have displayed. 
+- Automatic creation in our case is done via creating a crontab that runs every hour, and the dolueg2.py defines which plots of a project and which timespans (e.g. hourly, weekly, monthly, yearly) are created at that time, depending on the time of day the dolueg2.py is run. Adjust as needed.
+- dolueg2.py contains several functions which need to be adjusted:
+  - def move2webserver() needs the mounted webserver (or rewritten in case you use an FTP or want to use wput)
+  - def example() (an example project) contains a setup similar to ours, i.e. a loop over the timespans that are defined in definetimes() as day/week/month/year, and holds the plots. We define the directory of the project in the call and expect the timespans to be passed in as we check those against the known ones in definetimes(). This slightly convoluted approach allows proper definition of a month and a year back since we do not just go 30 days back but choose the same date of the previous month/year when possible.
+  - at the end of a project we call move2webserver with the passed in variables which results in the proper order for the webserver.
+  - all these can be adjusted as needed for your setup and serve as an initial sketch for you
+- If you wish for stationmap/windmaps with a google maps background you will need an API key. Take care that this API key is kept private. Alternatively and by default the statis maps use openstreetmap background so it works out of the box. The API key needs to be used in map/mapurl.py in the function definiton.
  
  ## Needed adjustments/scripts that you need
  We use a "getdata" function that returns the timeseries of a/several database code/s and the related information about the series, such as (device, measurement height, location ..). As it is likely that your data is in another form than ours, the relevant function is available on requests but keep in mind it is based on a specific organisation of meta and data tables on a SQL-Server we use that requires setup of the server, the dataflow and quality checks.
