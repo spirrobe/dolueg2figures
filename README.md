@@ -13,10 +13,16 @@ Available types are:
 
 You can find examples in the related, published BAMS article and at the above URL
  
- # Needed adjustments
+ # Installation
+ For proper functionality a few adjustments have to be made, dependent on your use-case:
+ - You need to have a getdata function that returns data and metadata for the timeseries. Since our database still has columnheaders in german, some adjustments in the plot.py file might be in order for what you want to have displayed. 
+ - Automatic creation in our case is done via creating a crontab that runs every hour, and the dolueg2.py defines which plots of a project and which timespans (e.g. hourly, weekly, monthly, yearly) are created at that time, depending on the time of day the dolueg2.py is run. Adjust as needed.
+ - If you wish for stationmap/windmaps with a google maps background you will need an API key. Take care that this API key is kept private. Alternatively and by default the statis maps use openstreetmap background so it works out of the box.
+ 
+ ## Needed adjustments/scripts that you need
  We use a "getdata" function that returns the timeseries of a/several database code/s and the related information about the series, such as (device, measurement height, location ..). As it is likely that your data is in another form than ours, the relevant function is available on requests but keep in mind it is based on a specific organisation of meta and data tables on a SQL-Server we use that requires setup of the server, the dataflow and quality checks.
  
- # Optional adjustments
+ ## Optional adjustments
  The list given in script/dolueg2 is meant to contain commands to create the figures as needed with the optional adjustments. 
  The main choice for new figures/alterations is the identifier that follows a "_station_variable_" scheme, e.g.:
  1 basel_0_a_ -> Will be shown in Basel at the "overview" (no station selected) and with "Temperature and relative humidity"
@@ -43,8 +49,19 @@ You can find examples in the related, published BAMS article and at the above UR
 # Examples
 ## Linear time series examples
 ### Simple case
+![Relative humidity at several locations](https://mcr.unibas.ch/dolueg2/projects/basel/plots/1week/basel_0_a_relhum.svg "Relative humidity at several locations")
 
-### Specific ticks/axes
+
+
+### Bars instead of markers/lines
+![Rain as bars instead of line](https://mcr.unibas.ch/dolueg2/projects/basel/plots/1week/basel_0_b_precipitation.svg "Rain as bars instead of line")
+### Cumulative Lines
+![Cumulative rain at different locations](https://mcr.unibas.ch/dolueg2/projects/basel/plots/1week/basel_0_b_precipitation_cumulative.svg "Cumulative rain at different locations")
+
+
+### Specific ticks/axes 
+Ticks ofthe right axis changed from numbers to winddirection (also possible for first axis)
+![Wind speed, gusts and direction](https://mcr.unibas.ch/dolueg2/projects/basel/plots/1week/basel_4_c_wind.svg "Wind speed, gusts and direction")
 
 ### More complex case
 Create an overview of temperatures in the area/surroundings to present prominently below a measurement values table
@@ -162,7 +179,17 @@ Despite its issues, use the jet colormap with cmap='jet'
 Set the plottype to 'mesh'
       
 ## windmap (draw windrose at locations of stations on a static webmap of google or openstreetmap)
+![Backscatter at Basel Klingelbergstrasse](https://mcr.unibas.ch/dolueg2/projects/basel/plots/1week/basel_0i_mapwind.svg "Ceilometer measurements of the boundary layer/lower atmosphere in Basel")
+
+![Backscatter at Basel Klingelbergstrasse](https://mcr.unibas.ch/dolueg2/projects/namibia/plots/3year/namibia_0i_12i_mapwind.svg "Ceilometer measurements of the boundary layer/lower atmosphere in Basel")
+
+![Backscatter at Basel Klingelbergstrasse](https://mcr.unibas.ch/dolueg2/projects/urbanfluxes/plots/1week/urbanfluxes_0i_9i_mapwind.svg "Ceilometer measurements of the boundary layer/lower atmosphere in Basel")
+
+
+
 
 ## stationmap (draw markers for stations of a network on a static webmap of google or openstreetmap)
+![Backscatter at Basel Klingelbergstrasse](https://mcr.unibas.ch/dolueg2/projects/urbanfluxes/plots/0day/urbanfluxes_0i_stationmap.svg "Ceilometer measurements of the boundary layer/lower atmosphere in Basel")
+
 
                                                   
