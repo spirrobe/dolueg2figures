@@ -272,7 +272,7 @@ Despite its issues, use the jet colormap with cmap='jet'
 Set the plottype to 'mesh'
       
 ## windmap (draw windrose at locations of stations on a static webmap of google or openstreetmap)
-![Windroses in the Basel area of last week](https://raw.githubusercontent.com/spirrobe/dolueg2figures/master/examples/basel_0i_mapwind.svg "Windroses in the Basel area of last week")
+[Windroses in the Basel area of last week](https://mcr.unibas.ch/dolueg2/projects/basel/plots/0day/basel_0i_mapwind.svg "Windroses in the Basel area of last week")
 ```python
 plot(['BKLIWDA1', 'BKLIWVA6', 'BLERWDA2', 'BLERWVA7'], 
      t0='*-7',
@@ -284,6 +284,7 @@ plot(['BKLIWDA1', 'BKLIWVA6', 'BLERWDA2', 'BLERWVA7'],
      #cmap='jet',
 )    
 ```
+The above cannot be shown inline as the created SVG is too large for Github.
 Choose which windcodes should be used in order of wind direction and wind speed (WDA, then WVA for us). The two stations here are Basel Klingelberg and Basel Lange Erle, that is urban and rural.
 Set t0 to '*-7' for data of the last week, t1 defaults to now (when the function is run). Timespan of data is indicated in the map.
 Do not use a dt as we want statistics of the whole range instead of aggregated.
