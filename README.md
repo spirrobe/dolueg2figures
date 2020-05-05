@@ -386,7 +386,7 @@ figopt is a dict containing the following keys
 - set the color of the line: 'zerolinecolor': '#000000'
 - set the width of the line: 'zerolinewidth': 1
 
-- Draw a grid, defaults to yes: 'grid': True
+- draw a grid, defaults to yes: 'grid': True
 - the linestyle of the grids vertical lines: 'gridxlinestyle': '-'
 - the linestyle of the grids horizontal lines: 'gridylinestyle': ':'
 - the linewidth of the grid: 'gridlinewidth': 0.25
@@ -404,18 +404,17 @@ figopt is a dict containing the following keys
 - which color for the edge of the rectangle to use: 'tropicalnightsedgecolor': '#000000'
 
 #### changes to drawing style of codes
-- which codes to draw as bar instead of as lines: 'barcodes': []
+- which codes to draw as bar instead of as lines: 'barcodes': [ ]
 - the width in dt-relative units, e.g. if dt = 30 minutes a 5/6 here would be 25 minutes: 'bartotalwidth': 0.85
 
-- which codes to cumulatively sum: 'cumulativecodes': []
+- which codes to cumulatively sum: 'cumulativecodes': [ ]
 
 - draw the axis in the same color as used by the first code drawn on it, e.g. blue:  'suppressaxiscolor': True
 - draw a legend with the information in the graph: 'suppresslegend': False
 
 - overwrite the legendtitle, defaults to information about aggregation: 'legtitle': None
-- set the legendlabels by yourself to overwrite the default behaviour to get meta information: 'leglabel': []
+- set the legendlabels by yourself to overwrite the default behaviour to get meta information: 'leglabel': [ ]
 - set the fontsize: 'legfontsize': 10
-- set the position of the legend according to matplotlib options, defaults to upper left: 'legposition': 10
 - create a box for the legend: 'legendbox': True
 - alpha for the legend: 'legalpha': 0.5
 - use an overarching figure title: 'figtitle': None
