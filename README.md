@@ -72,6 +72,37 @@ plot(['BLERRHA1', 'BKLIRHA9', 'BKLIRHA7', 'BLEORHA1', 'BLERRHA8', 'BKLSRHA2', 'B
 Select which codes (all relative humidity in this case) and the t0, t1 (here with the datetime module from the stdlib) and the dt as resolution of 30 minutes. Define the outputfile (change ending to .png if you want PNG files instead as it is passed directly to matplotlib).
 Create some blue shades/colors for use and explicitly set the yrange to avoid the autoscaling to only the existing range (sensible here for relative humidity).
 
+![Temperatures of a street canyon with tropicalnights marked](https://raw.githubusercontent.com/spirrobe/dolueg2figures/master/examples/basel_2_a_atemp.svg "Temperatures of a street canyon with tropicalnights marked")
+
+```python
+tempcol = ['#ffaa00', '#ff5a00', '#ff0000',
+           '#cc0000', '#990000', '#660000',
+           '#330000', '#000000', '#ff4d4d',
+           '#ff8080']
+           
+plot(['BKLSDTA1', 'BKLSDTA2'],   
+     t0='*-7', 
+     t1='*', 
+     dt='30Min',  
+     outfile='basel_2_a_atemp.svg',
+     colors=tempcol,  
+     minvalue=-999,                          
+     figopt={'marktropicalnight': True, }
+     )                                                                                                                    
+```
+
+Select the codes (street level temperature in this case) and use data a week back ('*-7').
+Too many colors can be passed in and not-needed colors are ignored.
+Set the figopt 'marktropicalnight' to true, resulting in a small rectrangle drawn at 20°C during nighttime only.
+Related figopt entries are: 
+- 'tropicalnightscolor': '#111111'
+- 'tropicalnightsedgecolor': '#000000'
+- 'tropicalnightsedgewidth': 1
+where these define in order
+- the color of the fill of the rectangle
+- the color of the edge of the rectangle
+- the height in percent of the rectangle relative to the total range
+            
 #### Bars instead of markers/lines
 ![Rain as bars instead of line](https://raw.githubusercontent.com/spirrobe/dolueg2figures/master/examples/basel_0_b_precipitation.svg "Rain as bars instead of line")
 ```python
@@ -321,5 +352,87 @@ Instead of a windmap, a similar type is the stationmap, which creates a map with
 
                                                                                     
 
+## default figure options
+figopt is a dict containing the following keys
 
-                                                  
+##### general figure options
+- how large should the figure (in inches as matplotlib uses inches for it): 'figsize': [24/2, 9.6/2]
+- the resolution in dots per inch, i.e. how large the endresult will be, mainly relevant for rasterparts, higher number means larger filesize as well: 'figdpi': 300 
+
+##### y-axis options
+- the range for the y-axis, with -9999 denoting autosearch: 'yrange': [-9999, -9999]
+- how many ticks should there be for the secondary axis, None lets matplotlib choose by itself: 'yticks': None
+- overwrite the label of the axis if needed, defaults to potentially matching meta data (name of series, unit) of the series (linear), height [m] (profile/mesh) or time of day (iso): 'ylabel': ''
+
+##### second (right) y-axis options
+- choose which codes to draw on the right: 'secondaryaxis': []
+- how to label the second axis: 'secondaryylabel': ''
+- which range to use for the axis, -9999 defaults to auto: 'secondaryaxisyrange': [-9999, -9999]
+- how many ticks to use for the second axis: 'secondaryaxisticks': None
+- how to label the ticks for this secondary axis: 'secondaryaxislabels': None
+- take the same axis scaling as on the left axis (only for linear plots) which seems weird but is an option: 'secondaryyaxissamescale': False
+
+##### x-axis options
+- the range for the y-axis, with -9999 denoting autosearch: 'xrange': [-9999, -9999]
+- how many ticks should there be for the secondary axis, None lets matplotlib choose by itself: 'xticks': None
+- overwrite the label of the axis if needed, defaults to the time, including timezone in some manner: 'xlabel': ''
+
+##### z-axis options, i.e. third dimension of data for iso/mesh plots
+- if a mesh/iso plot, use this to set the datarange, -9999 means autodetection:  'zrange': [-9999, -9999]
+- how many ticks should there be for the secondary axis, None lets matplotlib choose by itself: 'zticks': None
+- overwrite the label of the corresponding colorbar (mesh/iso) if needed, defaults to the the name and unit of the dataseries: 'zlabel': ''
+##### accessories
+- choose to draw a slightly thicker line at zero, defaults to yes: 'zeroline': True
+- set the color of the line: 'zerolinecolor': '#000000'
+- set the width of the line: 'zerolinewidth': 1
+
+- Draw a grid, defaults to yes: 'grid': True
+- the linestyle of the grids vertical lines: 'gridxlinestyle': '-'
+- the linestyle of the grids horizontal lines: 'gridylinestyle': ':'
+- the linewidth of the grid: 'gridlinewidth': 0.25
+- the color of the grid: 'gridlinecolor': 'k'
+
+- draw a shaded for the night: 'sunlines': True
+- the color to draw the shade in: 'sunlinescolor': '#bcbcbc'
+- the color to use for the sunline in the isoplots: 'sunlinesisocolor': '#000000'
+- the width of the line in the isoplots: 'sunlineswidth': 1.5
+- which textcolor for the isoplot sunline: 'sunlinestextcolor': '#333333'
+
+- whether to draw a rectangle for tropicalnights: 'marktropicalnight': False                                                           
+- the height in relative units to the yrange, defaults to 1%: 'tropicalnightsedgewidth': 1
+- which color to use for filling the tropical nights, is not visibile if 'tropicalnightsedgewidth' is too small: 'tropicalnightscolor': '#111111'
+- which color for the edge of the rectangle to use: 'tropicalnightsedgecolor': '#000000'
+
+#### changes to drawing style of codes
+- which codes to draw as bar instead of as lines: 'barcodes': []
+- the width in dt-relative units, e.g. if dt = 30 minutes a 5/6 here would be 25 minutes: 'bartotalwidth': 0.85
+
+- which codes to cumulatively sum: 'cumulativecodes': []
+
+- draw the axis in the same color as used by the first code drawn on it, e.g. blue:  'suppressaxiscolor': True
+- draw a legend with the information in the graph: 'suppresslegend': False
+
+- overwrite the legendtitle, defaults to information about aggregation: 'legtitle': None
+- set the legendlabels by yourself to overwrite the default behaviour to get meta information: 'leglabel': []
+- set the fontsize: 'legfontsize': 10
+- set the position of the legend according to matplotlib options, defaults to upper left: 'legposition': 10
+- create a box for the legend: 'legendbox': True
+- alpha for the legend: 'legalpha': 0.5
+- use an overarching figure title: 'figtitle': None
+- general fontsize to use for text: 'fontsize': 10
+
+##### the following are only applied to mesh/iso plots
+- whether to scale the data logarithmically, values below or equal 0 are masked: 'zlog': False,                                                                                                                          
+##### only applied to linear plots
+- whether to scale the y-axis logarithmically: 'ylog': False
+- whether to scale the second axis logarithmically: 'secondaryylog': False
+
+##### only applied to linear bar plots
+- draw the edge of the bar as well: 'baredge': False,                                                                                   
+
+##### only relevant for plots with a map background
+- how transparent the background, a high value makes the plot disappear somewhat: 'mapalpha': 0.85
+
+##### only relevant for stationmap data
+- the alpha value for the stationmarkers when creating a stationmap: 'stationalpha': 0.5
+                                                                                                                                                                                                                                        
