@@ -187,6 +187,25 @@ For figoptions set the left axis to autofind with [0, -9999], and to have 5 tick
 
 Set the linestyle windcodes[1] (which is the wind gusts in this case) to dotted with an ls of ':' and choose no linestyle for the windcodes[2] (winddirection) and only markers. The latter makes wind direction plots more appealing in our opinion. Change as needed/wanted.
 
+#### Adjusting the values gotten from the database for scaling, e.g. different units
+![Temperature Turbulent fluxes](https://raw.githubusercontent.com/spirrobe/dolueg2figures/master/examples/basel_1_e_energyflux_turbulent.svg "Temperature Turbulent fluxes")
+
+```python
+    plot(['BKLINRA1', 'BKLIWHCA', 'BKLIWTCA'], 
+    t0='*-30',
+    t1='*',
+    dt='1H',
+    outfile='basel_1_e_energyflux_turbulent.svg',
+    colors=['#000000', '#00CFFC', '#FF0000'],
+    multiplier=[1, 44.1, 1200],
+    figopt={'yrange': [-300, 600], 
+            'ylabel': 'W m$^{-2}$'
+            },  
+    )   
+```
+Choose codes and time as in other examples with specific colors for net radiation, latent and sensible heat flux which are both as covariances in the database.
+Multiply these in order by 1, 44.1, 1200 to scale them to Watt per square meter and set the label accordingly. 
+
 #### More complex cases
 Create an overview of temperatures in the area/surroundings to present prominently below a measurement values table
 ![Temperature Overview](https://raw.githubusercontent.com/spirrobe/dolueg2figures/master/examples/basel_temp_overview.svg "Temperature Overview")
@@ -218,17 +237,47 @@ Create an overview of temperatures in the area/surroundings to present prominent
 plot(['BKLIDTA9', 'BLERDTA1'],
      t0='*-7', t1='*',
      outfile='basel_0_a_atemp_scatter.svg',
+     indexcode='BKLIDTA9',
      figopt={'ytitle': 'Temperature Difference: Basel Klingelbergstrasse - Basel Lange Erlen'
              },
 )
 ```
 Substract the two codes (BKLIDTA9, urban; BLERDTA1, rural) for the time range (t0 is one year ago, now *-365 days, t1 is now *).
 Keep the temperature range that is shown fixed from -4 to 4 and choose a specific type for the title that is used in the graph
+The indexcode denotes which code should be used for the xaxis; if not explicitly set, defaults to the first one
         
 ## Profile (several heights versus time) time series example
+![Temperature difference between two stations over the course of a day versus day of year](https://raw.githubusercontent.com/spirrobe/dolueg2figures/master/examples/basel_1_a_atemp_profile.svg "Temperature Difference Urban-Rural")
+
+```python
+plot(['BKLIDTA'+i for i in ['7', '8', '9']],
+     t0=t0, t1=t1, dt='1H',
+     outfile=projectprefix+ '_1_a_atemp_profile.svg',  
+     plottype='profile',   
+     figopt={'profileconnect': True},   
+     colors=tempcol,        
+     title='Basel Klingelbergstrasse Temperature Profile', 
+     # account for height difference of measurements 
+     offset=[0.0392, 0.0882, 0.1372],    
+     minvalue=-999,       
+     lineopt={c: {'lw': 2, 'marker': 'o'}      
+              for c in ['BKLIDTA'+i for i in ['7', '8', '9']]}     
+) 
+```
+
+Choose a timestep of 1 hour (1H) to get more spacing between profile lines 
+Select it to be a profile plot
+Figopt denote that the single points of measurements should be connected via "profileconnect"
+Colors are can be HTML code for matplotlib or any known matplotlib colors (if no colors are passed, a default colormap is used, see defaultct())
+offset for each measurement height as the temperature in the database are not geopotential height
+minvalue serves no longer a real purpose as database got cleaned, kept for backward compatibility 
+lineopt denote a larger linewidth for the profileconnection, and which marker to use
+
+
+## Iso (measurements run over the day versus day of year) time series examples
 
 Create an overview of temperatures in the area/surroundings to present prominently below a measurement values table
-![Temperature difference between two stations over the course of a day versus day of year](https://raw.githubusercontent.com/spirrobe/dolueg2figures/master/examples/basel_1_a_atemp_profile.svg "Temperature Difference Urban-Rural")
+![Temperature profile at Basel Klingelbergstrasse](https://raw.githubusercontent.com/spirrobe/dolueg2figures/master/examples/basel_0_a_atemp_diff_iso.svg "Temperature profile at Basel Klingelbergstrasse")
 
 ```python
 plot(['BKLIDTA9-BLERDTA1'],
@@ -242,34 +291,6 @@ plot(['BKLIDTA9-BLERDTA1'],
 ```
 Substract the two codes (BKLIDTA9, urban; BLERDTA1, rural) for the time range (t0 is one year ago, now *-365 days, t1 is now *).
 Keep the temperature range that is shown fixed from -4 to 4 and choose a specific type for the title that is used in the graph
-        
-## Iso (measurements run over the day versus day of year) time series examples
-
-Create an overview of temperatures in the area/surroundings to present prominently below a measurement values table
-![Temperature profile at Basel Klingelbergstrasse](https://raw.githubusercontent.com/spirrobe/dolueg2figures/master/examples/basel_0_a_atemp_diff_iso.svg "Temperature profile at Basel Klingelbergstrasse")
-
-```python
-plot(['BKLIDTA'+i for i in ['7', '8', '9']],
-     t0=t0, t1=t1, dt='1H',
-     outfile='basel_1_a_atemp_profile.svg',
-     plottype='profile',
-     figopt={'profileconnect': True}, 
-     colors=['#3399ff', 'red', '#aa33ff'],  
-     title='Basel Klingelbergstrasse Temperature Profile',
-     # account for height difference of measurements
-     offset=[0.0392, 0.0882, 0.1372],
-     minvalue=-999,
-     lineopt={c: {'lw': 2, 'marker': 'o'}
-              for c in ['BKLIDTA'+i for i in ['7', '8', '9']]}
-     )                                                                                                                  
-```
-Choose a timestep of 1 hour (1H) to get more spacing between profile lines 
-Select it to be a profile plot
-Figopt denote that the single points of measurements should be connected via "profileconnect"
-Colors are can be HTML code for matplotlib or any known matplotlib colors (if no colors are passed, a default colormap is used, see defaultct())
-offset for each measurement height as the temperature in the database are not geopotential height
-minvalue serves no longer a real purpose as database got cleaned, kept for backward compatibility 
-lineopt denote a larger linewidth for the profileconnection, and which marker to use
                                                                                                                                       
 
 ## Mesh (measurements at several heights versus time)
@@ -350,7 +371,30 @@ plot(['UFB1WWD', 'UFB2BVA', 'UFB3WWD', 'UFB4BVA', 'UFB5WWD',
 
 Instead of a windmap, a similar type is the stationmap, which creates a map with markers, where nearby markers are combined. Each marker is numbered according to the passed in order of the list. As there are no real data needed, t0 and t1 can be set to a minimal timespan and any code for a station can be used as only the metadata of latitude and longitude are used.
 
-                                                                                    
+
+## other keywords
+- for xy-plots the indexcode can be explicitly set or defaults to the first one of the codelist otherwise
+- which values to remove after the db output can be done via
+  - removing values below a threshold, e.g. minvalue=-9999
+  - removing values above  a threshold, e.g. maxvalue=1000
+- set the zlog directly instead of as figure options via zlog=True
+- choose values to multiply (or divide) the database output with via mutliplier=[values]
+- choose values to offset (+ or -) the database output with via offset=[values]
+- **kwargs can be used to be passed onto the called plotroutine, refer to their documentation for more information 
+  
+
+## default lineopt options
+These lineoptions are passed in via either a dict with an entry directly for each code
+or a dict containing just the entries in which case the entry is extended to all codes
+- use the following color code for this series 'color': defaultcolors[0] (defaultcolormap can be read by defaultct())
+- the linestyle to use 'ls': '-'
+- the linewidth to use 'lw': 1.5
+- the marker (defaults to no markers) to use: 'marker': None 
+- the size of the marker defaults to if used: 'markersize': 5
+- the fill color of the marker: 'markerfacecolor': defaultcolors[0]
+- the border of the marker: 'markeredgecolor': '#000000'
+- the alpha level of the line/marker to use: 'alpha': 0.85,   
+- what to enter into the legend if not the autoselection is used: 'label': ''
 
 ## default figure options
 figopt is a dict containing the following keys
