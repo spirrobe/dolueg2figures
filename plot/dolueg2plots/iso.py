@@ -283,6 +283,7 @@ def iso(data,
     legy = ax.get_ylim()
     legy = legy[0]+0.975*(legy[1]-legy[0])
     legtext = ''
+
     if _figopt['legtitle']:
         legtext += _figopt['legtitle']
 

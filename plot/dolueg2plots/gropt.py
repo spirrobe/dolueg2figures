@@ -30,17 +30,16 @@ def colorscaler(color,
     return rgb
 
 
-
 def unituppercase(x, quiet=True):
     if '$^{-' in x:
         if not quiet:
             print('String with units already latex converted')
         return x
 
-    ec = [' ', '/', '*', '(', ]
+    ec = [' ', '/', '*', '(',]
     # x = x.strip().replace('-', '$^{-').replace('+', '$^{')
     out, openbracket = '', False
-    for i in x:
+    for _, i in enumerate(x):
         if i == '{':
             openbracket = True
         if i == '}':
@@ -52,13 +51,19 @@ def unituppercase(x, quiet=True):
             # if out[-1] in [' ', '/', '*']
             #     pass
 
+            openbracket = True
             if out[-1] == '-':
                 out = out[:-1]+ '$^{-'
             elif out[-1] == '+':
-                out = out[:-1]+ '$^{'
+                if i == '1' and not x[_+1].isnumeric():
+                    i = ''
+                    out = out[:-1]
+                    openbracket = False
+                else:
+                    out = out[:-1] + '$^{'
             else:
                 out += '$^{'
-            openbracket = True
+
 
         if openbracket and i.isalpha():
             out += '}$'

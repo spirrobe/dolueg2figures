@@ -138,12 +138,15 @@ def plot(codes,
     if data is None or data is False or meta is None or data.dropna(how='all').empty:
         if data is None or data is False or data.dropna(how='all').empty:
             errormsg = 'NO VALID VALUES YET IN DATABASE FOR \n'
-            for code in codes:
+            for codeno, code in enumerate(codes):
                 errormsg += code
                 if meta and code in meta:
-                    errormsg  += ' in ' + meta[code]['sqldb'] + '\n'
+                    errormsg += ' in ' + meta[code]['sqldb'] + '\n'
                 else:
-                    errormsg  += ' does not exist in the database\n'
+                    errormsg += ' does not exist in the database\n'
+                if codeno > 10:
+                    errormsg += ' and more codes'
+                    break
             errormsg += '\nTimestamp t0:'+ str(t0) + '\n'
             errormsg += 'Timestamp t1:'+ str(t1)
         else:
@@ -169,6 +172,7 @@ def plot(codes,
         else:
             plt.close(fig[0])
             return
+
 
     localtz = datetime.datetime.now().astimezone().tzinfo
     datatz = str(data.tz_convert(localtz).index.tzinfo)
@@ -376,6 +380,7 @@ def plot(codes,
         strdt = round(strdt, 2)
 
     strdt = str(strdt) + strunit
+    # meta[x]['name'] is the variable name, e.g. backscatter
     possiblelegtitle = np.unique([meta[key]['name'] for key in data.columns])
 
     if len(possiblelegtitle) == 1:
@@ -397,43 +402,76 @@ def plot(codes,
     else:
         onestat = False
 
-    for key in data.columns:
-        if not onestat:
-            _lineopt[key]['label'] = meta[key]['name_sdt']+' '
+    # all the same variables at the same place means we can create a slimmed
+    # down version of the legend and still give information
+    if onetitle and len(data.columns) > 10 and plottype in types[5]:
+        _figopt['legtitle'] += '\n'
+        key = data.columns[0]
+        ix = np.nanargmax([i.isnumeric() for i in key])
+        varlist = [int(key[ix:]) for key in data.columns]
+        # get the maximum and mininum numbered codes
+        mincode, maxcode = np.nanargmin(varlist), np.nanargmax(varlist)
+        mincode, maxcode = data.columns[mincode], data.columns[maxcode]
+        _figopt['legtitle'] += mincode.upper() + ' - ' + maxcode[ix:] + ' with '
+        _figopt['legtitle'] += meta[key]['geraet'] + ' '
 
-        if onetitle:
-            pass
-        else:
-            _lineopt[key]['label'] += ' ' + meta[key]['name']
-            _lineopt[key]['label'] += ' ('
+        for key in [mincode, maxcode]:
+            if meta[key]['messhoehe'] != -9999:
+                if meta[key]['messhoehe'] < 0:
+                    word = ' m below ground'
+                elif meta[key]['messhoehe'] > 0:
+                    word = ' m above ground'
+                else:
+                    word = 'on the ground'
 
-        _lineopt[key]['label'] += key+ ' with ' + meta[key]['geraet']
+                if meta[key]['messhoehe'] % 1 == 0:
+                    number = str(int(meta[key]['messhoehe']))
+                else:
+                    number = str(np.round(meta[key]['messhoehe'], 2))
 
-        _lineopt[key]['label'] += ', '
-        if meta[key]['messhoehe'] != -9999:
-            if meta[key]['messhoehe'] < 0:
-                word = ' m below ground'
-            elif meta[key]['messhoehe'] > 0:
-                word = ' m above ground'
+                if key == mincode:
+                    _figopt['legtitle'] += number + ' - '
+                else:
+                    _figopt['legtitle'] += number + word + ', '
+
+        _figopt['legtitle'] += meta[key]['aggregation']
+    else:
+    # otherwise create each legendentry based on the singular time-series
+        for key in data.columns:
+            if not onestat:
+                _lineopt[key]['label'] = meta[key]['name_sdt']+' '
+
+            if onetitle:
+                pass
             else:
-                word = 'on the ground'
+                _lineopt[key]['label'] += ' ' + meta[key]['name']
+                _lineopt[key]['label'] += ' ('
 
-            if meta[key]['messhoehe'] % 1 == 0:
-                number = str(int(meta[key]['messhoehe']))
+            _lineopt[key]['label'] += key+ ' with ' + meta[key]['geraet']
+
+            _lineopt[key]['label'] += ', '
+            if meta[key]['messhoehe'] != -9999:
+                if meta[key]['messhoehe'] < 0:
+                    word = ' m below ground'
+                elif meta[key]['messhoehe'] > 0:
+                    word = ' m above ground'
+                else:
+                    word = 'on the ground'
+
+                if meta[key]['messhoehe'] % 1 == 0:
+                    number = str(int(meta[key]['messhoehe']))
+                else:
+                    number = str(np.round(meta[key]['messhoehe'],2))
+
+                _lineopt[key]['label'] += number + ' ' + word + ', '
+
+            _lineopt[key]['label'] += meta[key]['aggregation']
+
+            # only add the closing brackets if its onetitle
+            if onetitle:
+                pass
             else:
-                number = str(np.round(meta[key]['messhoehe'],2))
-
-            _lineopt[key]['label'] += number + ' ' + word + ', '
-
-        _lineopt[key]['label'] += meta[key]['aggregation']
-
-        # only add the closing brackets if its onetitle
-        if onetitle:
-            pass
-        else:
-            _lineopt[key]['label'] += ')'
-
-
+                _lineopt[key]['label'] += ')'
 
     # some warning for user in case there is no secondaryaxis set and
     # we have "non-matching" timeseries in a strict sense (unequal units, names)
@@ -674,7 +712,7 @@ def plot(codes,
                             color=_figopt['sunlinestextcolor'],
                             fontsize=10,
                             ha='left',
-                            va=['top', 'bottom'][i],
+                            va='top',
                             bbox=dict(boxstyle='round', pad=0.1, fc="w", ec="w", alpha=0.2),
                             )
 

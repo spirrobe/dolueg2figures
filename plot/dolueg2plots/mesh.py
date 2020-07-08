@@ -220,15 +220,6 @@ def mesh(data,
 
     ax.set_xlabel('Time (UTC)')
 
-    if _figopt['figtitle']:
-        ax.text(0.01 * np.diff(ax.get_xlim())+ax.get_xlim()[0],
-                ax.get_ylim()[1] - 0.05 * np.diff(ax.get_ylim()),
-                _figopt['figtitle'],
-                ha='left', va='center',
-                zorder=20, fontsize=_figopt['fontsize'],
-                bbox=dict(boxstyle='round', fc="w", ec="k",),
-                )
-
     if _figopt['grid']:
         ax.grid(c=_figopt['gridlinecolor'],
                 ls=_figopt['gridylinestyle'],
@@ -253,6 +244,42 @@ def mesh(data,
                 which='major',
                 axis='x')
 
+
+    legx = data.index.tz_localize(None)[0], data.index.tz_localize(None)[-1]
+    #legx = ax.get_xlim()
+    legx = legx[0]+0.025*(legx[1]-legx[0])
+
+    legy = _y[0], _y[-1]
+    legy = legy[0]+0.97*(legy[1]-legy[0])
+    legtext = ''
+
+    if _figopt['figtitle']:
+        legtext += '\n'+_figopt['figtitle']
+
+    if _figopt['legtitle']:
+        legtext += _figopt['legtitle']
+
+    ax.text(legx, legy,
+            legtext,
+            ha='left',
+            va='top',
+            # framealpha=_figopt['legalpha'],
+            fontsize=_figopt['legfontsize'],
+            bbox = dict(boxstyle='round,pad=0.6',
+                        fc="w",
+                        ec="w",
+                        alpha=_figopt['legalpha'],
+                        )
+              )
+
+    # if _figopt['figtitle']:
+    #     ax.text(0.01 * np.diff(ax.get_xlim())+ax.get_xlim()[0],
+    #             ax.get_ylim()[1] - 0.05 * np.diff(ax.get_ylim()),
+    #             _figopt['figtitle'],
+    #             ha='left', va='top',
+    #             zorder=20, fontsize=_figopt['fontsize'],
+    #             bbox=dict(boxstyle='round', fc="w", ec="k",),
+    #             )
 
 
     return fig, ax
