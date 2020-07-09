@@ -1,5 +1,8 @@
 # Figures
-Make figures like on mcr.unibas.ch/dolueg2 in terms of layout and filenaming so they may automatically be found by the PHP script employed by the webserver
+Make figures like on mcr.unibas.ch/dolueg2 in terms of layout and filenaming so they may automatically be found by the PHP script employed by the webserver.
+See [live dolueg for examples](https://mcr.unibas.ch/dolueg2/index.php?project=basel) or check the [slimmed down testversion of the webserver without many figures](https://mcr.unibas.ch/doluegtest/index.php?project=template&var=0).
+
+Webserver repository [can be found here](https://github.com/spirrobe/dolueg2page)
 
 # Types of figures
 Available types are:
