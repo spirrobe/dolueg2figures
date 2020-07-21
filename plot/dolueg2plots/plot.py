@@ -381,98 +381,101 @@ def plot(codes,
 
     strdt = str(strdt) + strunit
     # meta[x]['name'] is the variable name, e.g. backscatter
-    possiblelegtitle = np.unique([meta[key]['name'] for key in data.columns])
-
-    if len(possiblelegtitle) == 1:
-        _figopt['legtitle'] = possiblelegtitle[0] + ', '
-        onetitle = True
+    if _figopt['legtitle']:
+        pass
     else:
-        _figopt['legtitle'] = ''
-        onetitle = False
+        possiblelegtitle = np.unique([meta[key]['name'] for key in data.columns])
 
-    if plottype not in types[4]:
-        _figopt['legtitle'] += 'Agg. to '  + strdt
-    else:
-        _figopt['legtitle'] += 'Stations:'
+        if len(possiblelegtitle) == 1:
+            _figopt['legtitle'] = possiblelegtitle[0] + ', '
+            onetitle = True
+        else:
+            _figopt['legtitle'] = ''
+            onetitle = False
 
-    uniqstats = np.unique([meta[key]['name_sdt'] for key in data.columns])
-    if len(uniqstats) == 1:
-        onestat = True
-        _figopt['legtitle'] = uniqstats[0] +' ' + _figopt['legtitle']
-    else:
-        onestat = False
+        if plottype not in types[4]:
+            _figopt['legtitle'] += 'Agg. to '  + strdt
+        else:
+            _figopt['legtitle'] += 'Stations:'
 
-    # all the same variables at the same place means we can create a slimmed
-    # down version of the legend and still give information
-    if onetitle and len(data.columns) > 10 and plottype in types[5]:
-        if _figopt['legtitle']:
-             _figopt['legtitle'] += '\n'
-        key = data.columns[0]
-        ix = np.nanargmax([i.isnumeric() for i in key])
-        varlist = [int(key[ix:]) for key in data.columns]
-        # get the maximum and mininum numbered codes
-        mincode, maxcode = np.nanargmin(varlist), np.nanargmax(varlist)
-        mincode, maxcode = data.columns[mincode], data.columns[maxcode]
-        _figopt['legtitle'] += mincode.upper() + ' - ' + maxcode[ix:] + ' with '
-        _figopt['legtitle'] += meta[key]['geraet'] + ' '
+        uniqstats = np.unique([meta[key]['name_sdt'] for key in data.columns])
+        if len(uniqstats) == 1:
+            onestat = True
+            _figopt['legtitle'] = uniqstats[0] +' ' + _figopt['legtitle']
+        else:
+            onestat = False
 
-        for key in [mincode, maxcode]:
-            if meta[key]['messhoehe'] != -9999:
-                if meta[key]['messhoehe'] < 0:
-                    word = ' m below ground'
-                elif meta[key]['messhoehe'] > 0:
-                    word = ' m above ground'
+        # all the same variables at the same place means we can create a slimmed
+        # down version of the legend and still give information
+        if onetitle and len(data.columns) > 10 and plottype in types[5]:
+            if _figopt['legtitle']:
+                _figopt['legtitle'] += '\n'
+            key = data.columns[0]
+            ix = np.nanargmax([i.isnumeric() for i in key])
+            varlist = [int(key[ix:]) for key in data.columns]
+            # get the maximum and mininum numbered codes
+            mincode, maxcode = np.nanargmin(varlist), np.nanargmax(varlist)
+            mincode, maxcode = data.columns[mincode], data.columns[maxcode]
+            _figopt['legtitle'] += mincode.upper() + ' - ' + maxcode[ix:] + ' with '
+            _figopt['legtitle'] += meta[key]['geraet'] + ' '
+
+            for key in [mincode, maxcode]:
+                if meta[key]['messhoehe'] != -9999:
+                    if meta[key]['messhoehe'] < 0:
+                        word = ' m below ground'
+                    elif meta[key]['messhoehe'] > 0:
+                        word = ' m above ground'
+                    else:
+                        word = 'on the ground'
+
+                    if meta[key]['messhoehe'] % 1 == 0:
+                        number = str(int(meta[key]['messhoehe']))
+                    else:
+                        number = str(np.round(meta[key]['messhoehe'], 2))
+
+                    if key == mincode:
+                        _figopt['legtitle'] += number + ' - '
+                    else:
+                        _figopt['legtitle'] += number + word + ', '
+
+            _figopt['legtitle'] += meta[key]['aggregation']
+        else:
+        # otherwise create each legendentry based on the singular time-series
+            for key in data.columns:
+                if not onestat:
+                    _lineopt[key]['label'] = meta[key]['name_sdt']+' '
+
+                if onetitle:
+                    pass
                 else:
-                    word = 'on the ground'
+                    _lineopt[key]['label'] += ' ' + meta[key]['name']
+                    _lineopt[key]['label'] += ' ('
 
-                if meta[key]['messhoehe'] % 1 == 0:
-                    number = str(int(meta[key]['messhoehe']))
+                _lineopt[key]['label'] += key+ ' with ' + meta[key]['geraet']
+
+                _lineopt[key]['label'] += ', '
+                if meta[key]['messhoehe'] != -9999:
+                    if meta[key]['messhoehe'] < 0:
+                        word = ' m below ground'
+                    elif meta[key]['messhoehe'] > 0:
+                        word = ' m above ground'
+                    else:
+                        word = 'on the ground'
+
+                    if meta[key]['messhoehe'] % 1 == 0:
+                        number = str(int(meta[key]['messhoehe']))
+                    else:
+                        number = str(np.round(meta[key]['messhoehe'],2))
+
+                    _lineopt[key]['label'] += number + ' ' + word + ', '
+
+                _lineopt[key]['label'] += meta[key]['aggregation']
+
+                # only add the closing brackets if its onetitle
+                if onetitle:
+                    pass
                 else:
-                    number = str(np.round(meta[key]['messhoehe'], 2))
-
-                if key == mincode:
-                    _figopt['legtitle'] += number + ' - '
-                else:
-                    _figopt['legtitle'] += number + word + ', '
-
-        _figopt['legtitle'] += meta[key]['aggregation']
-    else:
-    # otherwise create each legendentry based on the singular time-series
-        for key in data.columns:
-            if not onestat:
-                _lineopt[key]['label'] = meta[key]['name_sdt']+' '
-
-            if onetitle:
-                pass
-            else:
-                _lineopt[key]['label'] += ' ' + meta[key]['name']
-                _lineopt[key]['label'] += ' ('
-
-            _lineopt[key]['label'] += key+ ' with ' + meta[key]['geraet']
-
-            _lineopt[key]['label'] += ', '
-            if meta[key]['messhoehe'] != -9999:
-                if meta[key]['messhoehe'] < 0:
-                    word = ' m below ground'
-                elif meta[key]['messhoehe'] > 0:
-                    word = ' m above ground'
-                else:
-                    word = 'on the ground'
-
-                if meta[key]['messhoehe'] % 1 == 0:
-                    number = str(int(meta[key]['messhoehe']))
-                else:
-                    number = str(np.round(meta[key]['messhoehe'],2))
-
-                _lineopt[key]['label'] += number + ' ' + word + ', '
-
-            _lineopt[key]['label'] += meta[key]['aggregation']
-
-            # only add the closing brackets if its onetitle
-            if onetitle:
-                pass
-            else:
-                _lineopt[key]['label'] += ')'
+                    _lineopt[key]['label'] += ')'
 
     # some warning for user in case there is no secondaryaxis set and
     # we have "non-matching" timeseries in a strict sense (unequal units, names)
