@@ -284,12 +284,13 @@ def iso(data,
     legy = legy[0]+0.975*(legy[1]-legy[0])
     legtext = ''
 
-    if _figopt['legtitle']:
-        legtext += _figopt['legtitle']
-
     if _figopt['figtitle']:
-        legtext += '\n'+_figopt['figtitle']
+        legtext += _figopt['figtitle']
 
+    if _figopt['legtitle']:
+        if legtext:
+            legtext += '\n'
+        legtext += _figopt['legtitle']
 
     ax.text(legx, legy,
             legtext,
