@@ -699,7 +699,7 @@ def plot(codes,
                            linewidths=_figopt['sunlineswidth'],
                            )
             # calulcate string position for sunset/sunrise text
-            dayindex = 2
+            dayindex = 5
             strpos = np.nonzero(sundown[dayindex, :].ravel())
 
             strpos = [strpos[0][0], strpos[0][-1]]
@@ -713,7 +713,7 @@ def plot(codes,
                             fontsize=10,
                             ha='left',
                             va='top',
-                            bbox=dict(boxstyle='round', pad=0.1, fc="w", ec="w", alpha=0.2),
+                            bbox=dict(boxstyle='round', pad=0.15, fc="w", ec="w", alpha=0.5),
                             )
 
         # linearplots
