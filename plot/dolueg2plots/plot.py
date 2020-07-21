@@ -405,7 +405,8 @@ def plot(codes,
     # all the same variables at the same place means we can create a slimmed
     # down version of the legend and still give information
     if onetitle and len(data.columns) > 10 and plottype in types[5]:
-        _figopt['legtitle'] += '\n'
+        if _figopt['legtitle']:
+             _figopt['legtitle'] += '\n'
         key = data.columns[0]
         ix = np.nanargmax([i.isnumeric() for i in key])
         varlist = [int(key[ix:]) for key in data.columns]
