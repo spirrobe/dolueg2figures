@@ -5,7 +5,7 @@ Created on Sun Sep 17 21:26:15 2017
 
 @author: spirro00
 """
-import numpy as np
+
 
 def windrose(dirdata,
              speeddata,
@@ -143,8 +143,6 @@ def windrose(dirdata,
     if len(speedbins) < 4:
         speedstep = speedstep / 2
         speedbins = np.arange(minspeed, maxspeed+speedstep, speedstep)
-
-    print(speedbins)
 
     mindir = np.nanmin(dirdata)
 
@@ -578,24 +576,4 @@ if __name__ == '__main__':
           'Its also possible to set ringofsums to True which will'
           'show the total frequency of a sector\n',
           'For further keyword see method call')
-
-#     from mcr.sql.util import getdata
-#     import datetime
-#     t1 = datetime.datetime.utcnow()
-#     t0 = t1 - datetime.timedelta(days=20)
-#     t0 = datetime.datetime(2017, 9, 11, 12, 0)
-#     t1 = datetime.datetime(2017, 10, 2, 12, 0)
-#     stat='GB'
-#     codes = ['FN'+stat+'WDA1', 'FN'+stat+'WVA1', 'FN'+stat+'FGT3']
-
-#     data, meta = getdata(codes, t1=t1, t0=t0, )
-#     data[data['FNGBWDA1'] == 0] = np.nan
-#     x = windrose(data[codes[0]],
-#                  data[codes[1]],
-#                  speedstep=1,
-#                  sectorsize=5,
-#                  ringofsums=data[codes[2]],
-# #                 ringofsumagg=np.nanmin,
-# #                 cmap2='terrain',
-#                  )
 

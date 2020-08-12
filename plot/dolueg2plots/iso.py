@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # """
 # Created on Fri Nov 30 15:53:19 2018
@@ -27,8 +27,8 @@ def iso(data,
         # valuerange='auto',
         noagg=True,
         cmap='RdBu_r',
-        title='Values',
-        figtitle='Isopleths',
+        #title='Values',
+        #figtitle='Isopleths',
         **kwargs,
         ):
 
@@ -284,12 +284,13 @@ def iso(data,
     legy = legy[0]+0.975*(legy[1]-legy[0])
     legtext = ''
 
-    if _figopt['legtitle']:
-        legtext += _figopt['legtitle']
-
     if _figopt['figtitle']:
-        legtext += '\n'+_figopt['figtitle']
+        legtext += _figopt['figtitle']
 
+    if _figopt['legtitle']:
+        if legtext:
+            legtext += '\n'
+        legtext += _figopt['legtitle']
 
     ax.text(legx, legy,
             legtext,

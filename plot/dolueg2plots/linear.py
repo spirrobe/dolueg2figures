@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # """
 # Created on Fri Nov 30 15:53:26 2018
@@ -151,8 +151,8 @@ def linear(data,
     if  _figopt['ylabel']:
         ytitle = _figopt['ylabel']
     else:
-        ylabels = np.unique([html.unescape(meta[c]['name']+
-                            ' ['+unituppercase(meta[c]['einheit'])+']')
+        ylabels = np.unique([html.unescape(meta[c]['variablename']+
+                            ' ['+unituppercase(meta[c]['unit'])+']')
                              for c in primcodes])
         ytitle = '\n'.join((ylabels))
 
@@ -205,8 +205,8 @@ def linear(data,
         if  _figopt['secondaryylabel']:
             ytitle2 = _figopt['secondaryylabel']
         else:
-            ylabels2 = np.unique([html.unescape(meta[c]['name']+
-                            '['+unituppercase(meta[c]['einheit'])+']')
+            ylabels2 = np.unique([html.unescape(meta[c]['variablename']+
+                            '['+unituppercase(meta[c]['unit'])+']')
                              for c in seccodes])
             ytitle2 = '\n'.join([html.unescape(c)
                                  for c in ylabels2])
@@ -250,10 +250,10 @@ def linear(data,
 
 
     if _figopt['type'] == 'xy':
-        xlabel = [meta[data.index.name]['name']]
-        xunits = unituppercase([meta[data.index.name]['einheit']])
-        xtitle = '\n'.join([html.unescape(a+' ['+b+']')
-                            for a,b in zip(xlabel,xunits)])
+        xlabel = meta[data.index.name]['variablename']
+        xunits = unituppercase(meta[data.index.name]['unit'])
+        xtitle = html.unescape(xlabel+' ['+xunits+']')
+
         ax.set_xlabel(xtitle)
 
 
@@ -347,25 +347,3 @@ def linear(data,
 if __name__ == '__main__':
     print('*'*10, 'HELP for linear', '*'*10)
     print('Creates a linear plot of passed in data time series')
-    import os
-    import pandas as pd
-    import pickle
-    from mcr.sql.util import getdata
-
-#    datafile = './dbdata.pkl'
-#    metafile = './dbmeta.pkl'
-#
-#    if os.path.exists(datafile) and os.path.exists(metafile):
-#        data = pd.read_pickle(datafile)
-#        with open(metafile,'rb') as mf:
-#            meta = pickle.load(mf)
-#    else:
-#        data, meta = getdata(['BKLIDTA1','BLERDTA1', 'BKLIDTA7','BKLIDTA8','BKLIDDTA9'],t0='*-31',t1='*')
-#        datafile = data.to_pickle(datafile)
-#        with open(metafile,'wb') as mf:
-#            pickle.dump(meta, mf, pickle.HIGHEST_PROTOCOL)
-#
-#    linear(data,
-#           meta,
-##           gropt={'BLERDTA1':{'secondaryaxis': True}}
-#           )

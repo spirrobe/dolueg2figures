@@ -94,7 +94,7 @@ def windmap(lats,
 
     ax.imshow(np.flip(mapimg,axis=0),
               aspect=aspect,#'equal',
-              origin='auto',
+              origin='lower',
               zorder=10,
               vmin=0, vmax=255,
               interpolation='None',
@@ -118,7 +118,7 @@ def windmap(lats,
     if winddircodes is None and meta:
         winddircodes = [m for m in meta
                         if meta[m]['variable'].upper() == 'WDA'
-                        or meta[m]['name'].upper() == 'WIND DIRECTION']
+                        or meta[m]['variablename'].upper() == 'WIND DIRECTION']
     elif winddircodes:
         pass
     else:
@@ -127,7 +127,7 @@ def windmap(lats,
     if winddircodes is None and meta:
         windspeedcodes = [m for m in meta
                           if meta[m]['variable'].upper() != 'WVA'
-                          and meta[m]['name'].upper() != 'WIND SPEED']
+                          and meta[m]['variablename'].upper() != 'WIND SPEED']
     elif windspeedcodes:
         pass
     else:

@@ -1,9 +1,10 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# """
+# Created on Fri Nov 30 15:54:52 2018
 #
-# Created on %(date)s
-#
-# @author: %(username)s
+# @author: spirro00
+# """
 
 
 def mesh(data,
@@ -118,7 +119,7 @@ def mesh(data,
         if meta is None:
             _y = np.arange(len(data.columns))
         else:
-            _y = [meta[i]['messhoehe'] for i in data.columns]
+            _y = [meta[i]['measurementheight'] for i in data.columns]
     else:
         _y = y
 
@@ -168,8 +169,8 @@ def mesh(data,
         if meta is None:
             ztitle = _figopt['zlabel']
         else:
-            zlabels = np.unique([html.unescape(meta[c]['name'] +
-                                                    ' ['+meta[c]['einheit']+']')
+            zlabels = np.unique([html.unescape(meta[c]['variablename'] +
+                                                    ' ['+meta[c]['unit']+']')
                                 for c in data.columns])
             ztitle = '\n'.join((zlabels))
 

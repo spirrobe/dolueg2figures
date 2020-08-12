@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # """
 # Created on Fri Nov 30 15:54:52 2018
@@ -35,21 +35,39 @@ def plot(codes,
     import pandas as pd
     import matplotlib as mpl
     import html
+    import socket
 
-    mpl.use('Agg')
-    from sql.util import getdata
-    from plot.dolueg2plots.windmap import windmap
-    from plot.dolueg2plots.stationmap import stationmap
-    from plot.dolueg2plots.iso import iso
-    from plot.dolueg2plots.profiles import profiles
-    from plot.dolueg2plots.mesh import mesh
-    from plot.dolueg2plots.linear import linear
 
-    from plot.dolueg2plots.watermark import watermark
-    from plot.dolueg2plots.gropt import defaultfigopt, defaultlineopt, \
-                                        acceptedopt, extendopt, updateopt, \
-                                        sunpos, defaultct, defaultwindcolor, \
-                                        unituppercase
+    if 'met-ws' not in socket.gethostname():
+
+        from mcr.sql.util import getdata
+        from mcr.plot.dolueg2plots.watermark import watermark
+        from mcr.plot.dolueg2plots.gropt import defaultfigopt, defaultlineopt, \
+                                              acceptedopt, extendopt, updateopt, \
+                                              sunpos, defaultct, defaultwindcolor, \
+                                              unituppercase
+
+        from mcr.plot.dolueg2plots.windmap import windmap
+        from mcr.plot.dolueg2plots.stationmap import stationmap
+        from mcr.plot.dolueg2plots.iso import iso
+        from mcr.plot.dolueg2plots.profiles import profiles
+        from mcr.plot.dolueg2plots.mesh import mesh
+        from mcr.plot.dolueg2plots.linear import linear
+    else:
+        mpl.use('Agg')
+        from sql.util import getdata
+        from plot.dolueg2plots.watermark import watermark
+        from plot.dolueg2plots.gropt import defaultfigopt, defaultlineopt, \
+                                              acceptedopt, extendopt, updateopt, \
+                                              sunpos, defaultct, defaultwindcolor, \
+                                              unituppercase
+
+        from plot.dolueg2plots.windmap import windmap
+        from plot.dolueg2plots.stationmap import stationmap
+        from plot.dolueg2plots.iso import iso
+        from plot.dolueg2plots.profiles import profiles
+        from plot.dolueg2plots.mesh import mesh
+        from plot.dolueg2plots.linear import linear
 
     import matplotlib.pyplot as plt
     import matplotlib.dates as mdates
@@ -173,7 +191,6 @@ def plot(codes,
             plt.close(fig[0])
             return
 
-
     localtz = datetime.datetime.now().astimezone().tzinfo
     datatz = str(data.tz_convert(localtz).index.tzinfo)
     data = data.tz_convert(localtz).tz_localize(None)
@@ -282,18 +299,18 @@ def plot(codes,
                 # both are found, combine relevant information
                 # i.e. what we need for legend, consisting of
                 # the below, excluding the numeric types
-                # 'messhoehe', 'lat', 'lon'
+                # 'measurementheight', 'lat', 'lon'
                 # as it doesnt make sense to have two coordinates when
                 # math opeation took place
 
 
                 newmeta[code] = meta[_code[0]]
                 newmeta[code]['variable'] += ' '+opword[op]
-                newmeta[code]['name_sdt'] += ' and '+ meta[_code[1]]['name_sdt']
-                newmeta[code]['geraet'] += ' and '+ meta[_code[1]]['geraet']
+                newmeta[code]['locationname'] += ' and '+ meta[_code[1]]['locationname']
+                newmeta[code]['device'] += ' and '+ meta[_code[1]]['device']
                 newmeta[code]['aggregation'] += ' and '+ meta[_code[1]]['aggregation']
-                if meta[_code[1]]['einheit'] != meta[_code[0]]['einheit']:
-                    newmeta[code]['einheit'] += ' '+opword[op]+' ' + meta[_code[1]]['einheit']
+                if meta[_code[1]]['unit'] != meta[_code[0]]['unit']:
+                    newmeta[code]['unit'] += ' '+opword[op]+' ' + meta[_code[1]]['unit']
 
 
             elif _code[0] in meta or _code[1] in meta:
@@ -380,102 +397,105 @@ def plot(codes,
         strdt = round(strdt, 2)
 
     strdt = str(strdt) + strunit
-    # meta[x]['name'] is the variable name, e.g. backscatter
-    possiblelegtitle = np.unique([meta[key]['name'] for key in data.columns])
 
-    if len(possiblelegtitle) == 1:
-        _figopt['legtitle'] = possiblelegtitle[0] + ', '
-        onetitle = True
+    if _figopt['legtitle']:
+        pass
     else:
-        _figopt['legtitle'] = ''
-        onetitle = False
+        possiblelegtitle = np.unique([meta[key]['variablename'] for key in data.columns])
 
-    if plottype not in types[4]:
-        _figopt['legtitle'] += 'Agg. to '  + strdt
-    else:
-        _figopt['legtitle'] += 'Stations:'
+        if len(possiblelegtitle) == 1:
+            _figopt['legtitle'] = possiblelegtitle[0] + ', '
+            onetitle = True
+        else:
+            _figopt['legtitle'] = ''
+            onetitle = False
 
-    uniqstats = np.unique([meta[key]['name_sdt'] for key in data.columns])
-    if len(uniqstats) == 1:
-        onestat = True
-        _figopt['legtitle'] = uniqstats[0] +' ' + _figopt['legtitle']
-    else:
-        onestat = False
+        if plottype not in types[4]:
+            _figopt['legtitle'] += 'Agg. to '  + strdt
+        else:
+            _figopt['legtitle'] += 'Stations:'
 
-    # all the same variables at the same place means we can create a slimmed
-    # down version of the legend and still give information
-    if onetitle and len(data.columns) > 10 and plottype in types[5]:
-        _figopt['legtitle'] += '\n'
-        key = data.columns[0]
-        ix = np.nanargmax([i.isnumeric() for i in key])
-        varlist = [int(key[ix:]) for key in data.columns]
-        # get the maximum and mininum numbered codes
-        mincode, maxcode = np.nanargmin(varlist), np.nanargmax(varlist)
-        mincode, maxcode = data.columns[mincode], data.columns[maxcode]
-        _figopt['legtitle'] += mincode.upper() + ' - ' + maxcode[ix:] + ' with '
-        _figopt['legtitle'] += meta[key]['geraet'] + ' '
+        uniqstats = np.unique([meta[key]['locationname'] for key in data.columns])
+        if len(uniqstats) == 1:
+            onestat = True
+            _figopt['legtitle'] = uniqstats[0] +' ' + _figopt['legtitle']
+        else:
+            onestat = False
 
-        for key in [mincode, maxcode]:
-            if meta[key]['messhoehe'] != -9999:
-                if meta[key]['messhoehe'] < 0:
-                    word = ' m below ground'
-                elif meta[key]['messhoehe'] > 0:
-                    word = ' m above ground'
+        # all the same variables at the same place means we can create a slimmed
+        # down version of the legend and still give information
+        if onetitle and len(data.columns) > 10 and plottype in types[5]:
+            if _figopt['legtitle']:
+                _figopt['legtitle'] += '\n'
+            key = data.columns[0]
+            ix = np.nanargmax([i.isnumeric() for i in key])
+            varlist = [int(key[ix:]) for key in data.columns]
+            # get the maximum and mininum numbered codes
+            mincode, maxcode = np.nanargmin(varlist), np.nanargmax(varlist)
+            mincode, maxcode = data.columns[mincode], data.columns[maxcode]
+            _figopt['legtitle'] += mincode.upper() + ' - ' + maxcode[ix:] + ' with '
+            _figopt['legtitle'] += meta[key]['device'] + ' '
+
+            for key in [mincode, maxcode]:
+                if meta[key]['measurementheight'] != -9999:
+                    if meta[key]['measurementheight'] < 0:
+                        word = ' m below ground'
+                    elif meta[key]['measurementheight'] > 0:
+                        word = ' m above ground'
+                    else:
+                        word = 'on the ground'
+
+                    if meta[key]['measurementheight'] % 1 == 0:
+                        number = str(int(meta[key]['measurementheight']))
+                    else:
+                        number = str(np.round(meta[key]['measurementheight'], 2))
+
+                    if key == mincode:
+                        _figopt['legtitle'] += number + ' - '
+                    else:
+                        _figopt['legtitle'] += number + word + ', '
+
+            _figopt['legtitle'] += meta[key]['aggregation']
+        else:
+        # otherwise create each legendentry based on the singular time-series
+            for key in data.columns:
+                if not onestat:
+                    _lineopt[key]['label'] = meta[key]['locationname']+' '
+
+                if onetitle:
+                    pass
                 else:
-                    word = 'on the ground'
+                    _lineopt[key]['label'] += ' ' + meta[key]['variablename']
+                    _lineopt[key]['label'] += ' ('
 
-                if meta[key]['messhoehe'] % 1 == 0:
-                    number = str(int(meta[key]['messhoehe']))
+                _lineopt[key]['label'] += key+ ' with ' + meta[key]['device']
+
+                _lineopt[key]['label'] += ', '
+                if meta[key]['measurementheight'] != -9999:
+                    if meta[key]['measurementheight'] < 0:
+                        word = ' m below ground'
+                    elif meta[key]['measurementheight'] > 0:
+                        word = ' m above ground'
+                    else:
+                        word = 'on the ground'
+
+                    if meta[key]['measurementheight'] % 1 == 0:
+                        number = str(int(meta[key]['measurementheight']))
+                    else:
+                        number = str(np.round(meta[key]['measurementheight'],2))
+
+                    _lineopt[key]['label'] += number + ' ' + word + ', '
+
+                _lineopt[key]['label'] += meta[key]['aggregation']
+
+                # only add the closing brackets if its onetitle
+                if onetitle:
+                    pass
                 else:
-                    number = str(np.round(meta[key]['messhoehe'], 2))
-
-                if key == mincode:
-                    _figopt['legtitle'] += number + ' - '
-                else:
-                    _figopt['legtitle'] += number + word + ', '
-
-        _figopt['legtitle'] += meta[key]['aggregation']
-    else:
-    # otherwise create each legendentry based on the singular time-series
-        for key in data.columns:
-            if not onestat:
-                _lineopt[key]['label'] = meta[key]['name_sdt']+' '
-
-            if onetitle:
-                pass
-            else:
-                _lineopt[key]['label'] += ' ' + meta[key]['name']
-                _lineopt[key]['label'] += ' ('
-
-            _lineopt[key]['label'] += key+ ' with ' + meta[key]['geraet']
-
-            _lineopt[key]['label'] += ', '
-            if meta[key]['messhoehe'] != -9999:
-                if meta[key]['messhoehe'] < 0:
-                    word = ' m below ground'
-                elif meta[key]['messhoehe'] > 0:
-                    word = ' m above ground'
-                else:
-                    word = 'on the ground'
-
-                if meta[key]['messhoehe'] % 1 == 0:
-                    number = str(int(meta[key]['messhoehe']))
-                else:
-                    number = str(np.round(meta[key]['messhoehe'],2))
-
-                _lineopt[key]['label'] += number + ' ' + word + ', '
-
-            _lineopt[key]['label'] += meta[key]['aggregation']
-
-            # only add the closing brackets if its onetitle
-            if onetitle:
-                pass
-            else:
-                _lineopt[key]['label'] += ')'
+                    _lineopt[key]['label'] += ')'
 
     # some warning for user in case there is no secondaryaxis set and
     # we have "non-matching" timeseries in a strict sense (unequal units, names)
-
 
     primcodes = [c for c in codes if c not in _figopt['secondaryaxis']]
     seccodes = [c for c in codes if c in _figopt['secondaryaxis']]
@@ -483,24 +503,32 @@ def plot(codes,
     if _figopt['secondaryylabel']:
         pass
     else:
-        for i, c in enumerate(seccodes):
-            _figopt['secondaryylabel'] = meta[key]['name']
-            _figopt['secondaryylabel'] += ' ['+unituppercase(meta[key]['einheit'])+']\n'
-            _figopt['secondaryylabel'] = _figopt['secondaryylabel'].rstrip()
 
-    _figopt['secondaryylabel'] = html.unescape(unituppercase(_figopt['secondaryylabel']))
+        if len(np.unique([meta[key]['variablename'] for key in seccodes])) == 1:
+            _figopt['secondaryylabel'] = meta[seccodes[0]]['variablename']
+            _figopt['secondaryylabel'] += ' ['+unituppercase(meta[seccodes[0]]['unit'])+']'
+        elif len(np.unique([meta[key]['unit'] for key in seccodes])) == 1:
+            _figopt['secondaryylabel'] = ' ['+unituppercase(meta[seccodes[0]]['unit'])+']'
+        else:
+            if plottype not in types[3]+types[4] and seccodes:
+                print('Neither variable name nor units in database match for secondary codes:',
+                      seccodes, '\n',
+                      'Are you sure you want to plot them on the same axis?')
+            pass
+        _figopt['secondaryylabel'] = html.unescape(_figopt['secondaryylabel'])
 
     if _figopt['ylabel']:
         pass
     else:
-        if len(np.unique([meta[key]['name'] for key in primcodes])) == 1:
-            _figopt['ylabel'] = meta[primcodes[0]]['name']
-            _figopt['ylabel'] += ' ['+unituppercase(meta[primcodes[0]]['einheit'])+']'
-        elif len(np.unique([meta[key]['einheit'] for key in primcodes])) == 1:
-            _figopt['ylabel'] = ' ['+unituppercase(meta[primcodes[0]]['einheit'])+']'
+        if len(np.unique([meta[key]['variablename'] for key in primcodes])) == 1:
+            _figopt['ylabel'] = meta[primcodes[0]]['variablename']
+            _figopt['ylabel'] += ' ['+unituppercase(meta[primcodes[0]]['unit'])+']'
+        elif len(np.unique([meta[key]['unit'] for key in primcodes])) == 1:
+            _figopt['ylabel'] = ' ['+unituppercase(meta[primcodes[0]]['unit'])+']'
         else:
-            if plottype not in types[3]+types[4] and 'secondaryaxis' not in _figopt:
-                print('Neither variable name nor units in database match.',
+            if plottype not in types[3]+types[4]:
+                print('Neither variable name nor units in database match for primary codes:',
+                      primcodes, '\n',
                       'Are you sure you want to plot them on the same axis?')
             pass
     _figopt['ylabel'] = html.unescape(_figopt['ylabel'])
@@ -508,9 +536,6 @@ def plot(codes,
     # dttz = round((localutc - localtz).total_seconds() / 3600)
     _figopt['xlabel'] = 'Time (' + datatz + ')'
     # _figopt['xlabel'] = 'Time (' + str(datetime.datetime.now().astimezone().tzinfo) + ')'
-
-
-
 
     if len(codes) < 2 and plottype == 'xy':
         print('For an xy plot, at least two timeseries code have to be given')
@@ -527,8 +552,8 @@ def plot(codes,
             data.index = data[codes[indexcode % len(codes)]]
             data = data.drop(columns=codes[indexcode % len(codes)])
             _figopt['type'] = 'xy'
-            _figopt['xlabel'] = meta[codes[indexcode]]['name']
-            _figopt['xlabel'] += ' ['+unituppercase(meta[codes[indexcode]]['einheit'])+']'
+            _figopt['xlabel'] = meta[codes[indexcode]]['variablename']
+            _figopt['xlabel'] += ' ['+unituppercase(meta[codes[indexcode]]['unit'])+']'
             _figopt['xlabel'] = html.unescape(_figopt['xlabel'])
             _figopt['sunlines'] = False
         else:
@@ -547,14 +572,14 @@ def plot(codes,
 
     elif plottype in types[1]:
 
-        heights = [meta[i]['messhoehe'] for i in meta.keys()]
+        heights = [meta[i]['measurementheight'] for i in meta.keys()]
 
         fig = profiles(data,
                        fig=fig,
                        heights=heights,
                        lineopt=_lineopt,
                        figopt=_figopt,
-                       label=html.unescape(meta[data.columns[0]]['einheit']),
+                       label=html.unescape(meta[data.columns[0]]['unit']),
                        **kwargs,
                        )
         fig[0].tight_layout()
@@ -575,7 +600,7 @@ def plot(codes,
         if plottype in types[4]:
             lats = [meta[k]['lat'] for k in meta]
             lons = [meta[k]['lon'] for k in meta]
-            names = [meta[k]['name_sdt'] for k in meta]
+            names = [meta[k]['locationname'] for k in meta]
             fig = stationmap(lats, lons, names,
                              fig=fig,
                              lineopt=_lineopt,
@@ -583,17 +608,28 @@ def plot(codes,
                              mapalpha=_figopt['mapalpha'],
                              **kwargs)
         else:
+            # v = 'variablename'
+            # if f not in meta[]
+            def winddircheck(text):
+                text = text.lower()
+                if 'wind' in text and ('dir' in text or 'direction' in text):
+                    return True
+                else:
+                    return False
+
             winddircodes = [m for m in meta
-                            if meta[m]['variable'].upper() == 'WDA'
-                            or meta[m]['name'].upper() == 'WIND DIRECTION']
+                            if winddircheck(meta[m]['variablename'])]
 
             windspeedcodes = [m for m in meta
-                              if meta[m]['variable'].upper() != 'WDA'
-                              and meta[m]['name'].upper() != 'WIND DIRECTION']
+                              if not winddircheck(meta[m]['variablename'])
+                              and m not in winddircodes]
 
             if len(winddircodes) != len(windspeedcodes):
                 fig = fig[0]
                 print('Unequal length of wind direction and wind speed codes!')
+                print('Winddirectioncodes:', winddircodes,
+                      '\n',
+                      'Windspeedcodes:', windspeedcodes, )
             else:
                 # check for erraneous amount of 0 winddirection in data
 
@@ -644,12 +680,12 @@ def plot(codes,
         fig = [fig, None]
     elif plottype in types[5]:
 
-        measurementheight = [meta[i]['messhoehe'] for i in data.columns]
+        measurementheight = [meta[i]['measurementheight'] for i in data.columns]
         _figopt['zlabel'] = html.unescape(_figopt['ylabel'])
         data.columns = [d.upper() for d in data.columns]
 
         fig[0].subplots_adjust(bottom=0.15, left=0.08, right=0.92)
-
+        fig[1].set_xlim(data.index[0], data.index[-1])
         fig = mesh(data,
                    y=measurementheight,
                    fig=fig,
@@ -657,8 +693,8 @@ def plot(codes,
                    figopt=_figopt,
                    **kwargs,
                    )
-        #fig[1].set_xlim(data.index[0], data.index[-1])
-        fig[1].set_xlim(t0, t1) #data.index[0], data.index[-1])
+
+        fig[1].set_xlim(data.index[0], data.index[-1])
     else:
         print('Plottype not known, please use of the following:', types)
 
@@ -699,11 +735,11 @@ def plot(codes,
                            linewidths=_figopt['sunlineswidth'],
                            )
             # calulcate string position for sunset/sunrise text
-            dayindex = 2
+            dayindex = 5
             strpos = np.nonzero(sundown[dayindex, :].ravel())
 
             strpos = [strpos[0][0], strpos[0][-1]]
-            text = [' Sunrise', 'Sunset ']
+            text = [' Sunrise', ' Sunset']
             for i, p in enumerate(strpos):
                 fig[1].text(sunindex[dayindex],
                             ys[p],
@@ -713,7 +749,7 @@ def plot(codes,
                             fontsize=10,
                             ha='left',
                             va='top',
-                            bbox=dict(boxstyle='round', pad=0.1, fc="w", ec="w", alpha=0.2),
+                            bbox=dict(boxstyle='round', pad=0.12, fc="w", ec="w", alpha=0.5),
                             )
 
         # linearplots
