@@ -4,6 +4,8 @@ See [live dolueg for examples](https://mcr.unibas.ch/dolueg2/index.php?project=b
 
 Webserver repository [can be found here](https://github.com/spirrobe/dolueg2page)
 
+**The section of examples here is rather extensive and meant to illustrate the available options you can also see in the code**
+
 # Types of figures
 Available types are:
 - 'timeseries', 'linear' (default)
