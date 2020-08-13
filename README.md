@@ -4,7 +4,10 @@ See [live dolueg for examples](https://mcr.unibas.ch/dolueg2/index.php?project=b
 
 Webserver repository [can be found here](https://github.com/spirrobe/dolueg2page)
 
-**The section of examples here is rather extensive and meant to illustrate the available options you can also see in the code**
+For the remainder of this document, when a database code is mentioned, this may refer to either data from a SQL Table/a column from a CSV or Excel file. Basically, a database code or codes is a catch all term for for one or specific time series.
+
+**Note The section of examples here is rather extensive and meant to illustrate the available options you can also see in the code**
+
 
 # Types of figures
 Available types are:
@@ -39,7 +42,7 @@ For proper functionality a few adjustments have to be made, dependent on your us
  2 basel_1_2_3_b_c_ -> Shown in stations 1, 2 and 3 as well as at "Precipitation and evaporation" and "Wind and air pressure"
  3 basel_a_ -> Shown only for temperature
  
- This allows one figure to be placed specifically or as broadly as needed without creating the same figure several times
+ This allows to place the same figure in a specific category or as broadly as needed without creating the same figure several times
  
  Further adjustments that may be use:
  - Create a certain plot only with a certain data range (e.g. isopleths only for month/year data range) -> Adjust in the script
