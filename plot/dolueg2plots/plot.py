@@ -530,13 +530,13 @@ def plot(codes,
             if indexcode is None:
                 if not quiet:
                     print('Autoselecting first code as new index')
-                indexcode = 0
+                indexcode = codes[0]
 
-            data.index = data[codes[indexcode % len(codes)]]
-            data = data.drop(columns=codes[indexcode % len(codes)])
+            data.index = data[indexcode]
+            data = data.drop(columns=indexcode)
             _figopt['type'] = 'xy'
-            _figopt['xlabel'] = meta[codes[indexcode]]['variablename']
-            _figopt['xlabel'] += ' ['+unituppercase(meta[codes[indexcode]]['unit'])+']'
+            _figopt['xlabel'] = meta[indexcode]['variablename']
+            _figopt['xlabel'] += ' ['+unituppercase(meta[indexcode]['unit'])+']'
             _figopt['xlabel'] = html.unescape(_figopt['xlabel'])
             _figopt['sunlines'] = False
         else:
