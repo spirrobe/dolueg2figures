@@ -97,12 +97,12 @@ def basefinder(lower, upper=None):
     # get the actual number that we are interested in
     leftover = diff // (10 ** exp)
 
-    if leftover >= 5:
+    if leftover > 5:
         x = 2
-    elif leftover >= 2:
+    elif leftover > 2:
         x = 1
     else:
-        x = 0.5
+        x = 0.25
 
     _base = x * 10 ** exp
 
