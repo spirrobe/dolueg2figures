@@ -246,8 +246,8 @@ plot(['BKLIDTA9', 'BLERDTA1'],
      t0='*-7', t1='*',
      outfile='basel_0_a_atemp_scatter.svg',
      indexcode='BKLIDTA9',
-     figopt={'ytitle': 'Temperature Difference: Basel Klingelbergstrasse - Basel Lange Erlen'
-             },
+     lineopt={'BLERDTA1': {'marker':'o', 'ls': 'None'}, 'BKLIWVA1':{'marker':'o', 'ls': 'None'}},
+     plottype='xy',
 )
 ```
 Substract the two codes (BKLIDTA9, urban; BLERDTA1, rural) for the time range (t0 is one year ago, now *-365 days, t1 is now *).
