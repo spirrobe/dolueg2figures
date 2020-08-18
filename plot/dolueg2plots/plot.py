@@ -707,7 +707,7 @@ def plot(codes,
             sundown = np.reshape(sundown, (len(sundown)//60//24, 24*60))
             ylim = fig[1].get_ylim()
             ys = np.linspace(ylim[0], ylim[1], 24*60)
-            fig[1].contour(np.unique(sunindex.date)[:-1],
+            fig[1].contour(mdates.date2num(np.unique(sunindex.date)[:-1]),
                            ys,
                            sundown.T,
                            # the level doesnt matter except being between 0 and 1

@@ -85,7 +85,7 @@ def iso(data,
         shp = [_x.shape[0], _y.shape[0]]
         dts = data.index[1:] - data.index[:-1]
         dts = min(dts[dts > datetime.timedelta()])
-        _z = data.resample(dts, closed = 'right', label = 'right').interpolate()
+        _z = data.resample(dts, closed = 'right', label = 'right').bfill()
 
         if len(_z[_z.index.date == _x[0]]) != 144:
             _z = _z[_x[0] + datetime.timedelta(days = 1):]
@@ -126,24 +126,7 @@ def iso(data,
         _z = np.vstack((_z, _z[0, :]))
         _z = np.hstack((_z, _z[:, 0][np.newaxis].T))
 
-
-    if _figopt['zlog']:
-        norm = mpl.colors.LogNorm()
-        _z[_z <= 0] = np.nan
-        _z = np.ma.masked_array(_z, mask=(np.isnan(_z)))
-    else:
-        norm = mpl.colors.Normalize()
-
-
     vmin, vmax = -np.ceil(np.abs(_z).max()), np.ceil(np.abs(_z).max())
-
-    # vmin, vmax = -valuerange, valuerange
-    # vmin, vmax = valuerange
-
-    # cbticks = (vmax - vmin) + 1
-    # while cbticks >= 10:
-    #     cbticks = np.ceil(cbticks / 2)
-    # cbticks = int(cbticks)
 
     if type(_figopt['zrange']) == list:
         _zr = _figopt['zrange']
@@ -183,6 +166,11 @@ def iso(data,
         # do not adjust vmin/vmax but we still need the colorbarticks
         cbticks = np.linspace(vmin, vmax, cbticks)
 
+    if _figopt['zlog']:
+        norm = mpl.colors.LogNorm(vmin=vmin, vmax=vmax)
+        _z[_z <= 0] = np.nan
+    else:
+        norm = mpl.colors.Normalize(vmin=vmin, vmax=vmax)
 
     if noagg:
         rto, xform = autotimeaxis(data.index,)
@@ -192,6 +180,9 @@ def iso(data,
     else:
         yaxisformat = mdates.DateFormatter('%H:%M')
         xaxisformat = mdates.DateFormatter('%d.%m')
+
+    _z = np.ma.masked_array(_z, mask=(np.isnan(_z)))
+    _x = [mdates.date2num(i) for i in _x]
 
     if makemesh:
         mesh = ax.pcolormesh(_x, _y, _z, cmap = cmap,
