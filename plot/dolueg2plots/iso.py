@@ -189,6 +189,7 @@ def iso(data,
                              vmin=vmin,
                              vmax=vmax,
                              norm=norm,
+                             shading='flat',
                              edgecolors='face',
                              rasterized=True)
     else:
